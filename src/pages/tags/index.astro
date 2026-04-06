@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getAllPosts } from '../../utils/posts';
+import { getAllTags } from '../../utils/tags';
+
+const allPosts = await getAllPosts();
+const tagMap = getAllTags(allPosts);
+---
+
+<BaseLayout title="Tags" description="business decoding의 모든 태그 목록">
+  <div class="container py-12">
+    <Breadcrumbs items={[
+      { name: 'Home', href: '/' },
+      { name: 'Tags' },
+    ]} />
+
+    <h1 class="text-3xl font-extrabold text-[var(--color-primary)] mb-2 tracking-tight">Tags</h1>
+    <p class="text-[var(--color-text-secondary)] mb-10">총 {tagMap.size}개의 태그</p>
+
+    <div class="flex flex-wrap gap-3">
+      {[...tagMap.entries()].map(([tag, count]) => (
+        <a
+          href={`/tags/${tag}`}
+          class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-surface-alt)] border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] hover:border-[var(--color-highlight)] hover:text-[var(--color-highlight)] transition-all duration-200"
+        >
+          #{tag}
+          <span class="text-xs text-[var(--color-text-light)] bg-white px-1.5 py-0.5 rounded-full">{count}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

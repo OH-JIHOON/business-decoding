@@ -1,0 +1,58 @@
+---
+import SocialLinks from './SocialLinks.astro';
+
+const year = new Date().getFullYear();
+
+const footerLinks = [
+  { name: 'About', href: '/about' },
+  { name: 'Contact', href: '/contact' },
+  { name: 'Privacy', href: '/privacy' },
+  { name: 'Terms', href: '/terms' },
+];
+---
+
+<footer class="border-t border-[var(--color-border)] bg-[var(--color-surface-alt)] mt-20">
+  <div class="container py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Brand -->
+      <div>
+        <a href="/" class="text-lg font-bold text-[var(--color-primary)]">business decoding</a>
+        <p class="mt-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">
+          비즈니스 구조를 해석하고<br />인사이트를 축적하는 콘텐츠 플랫폼
+        </p>
+      </div>
+
+      <!-- Links -->
+      <div>
+        <h3 class="text-sm font-semibold text-[var(--color-text)] mb-3 uppercase tracking-wider">Links</h3>
+        <nav class="flex flex-col gap-2" aria-label="푸터 링크">
+          {footerLinks.map((link) => (
+            <a
+              href={link.href}
+              class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+            >
+              {link.name}
+            </a>
+          ))}
+          <a
+            href="/rss.xml"
+            class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors inline-flex items-center gap-1"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
+            RSS
+          </a>
+        </nav>
+      </div>
+
+      <!-- Social -->
+      <div>
+        <h3 class="text-sm font-semibold text-[var(--color-text)] mb-3 uppercase tracking-wider">Connect</h3>
+        <SocialLinks />
+      </div>
+    </div>
+
+    <div class="mt-10 pt-6 border-t border-[var(--color-border)] text-center text-xs text-[var(--color-text-light)]">
+      &copy; {year} business decoding. All rights reserved.
+    </div>
+  </div>
+</footer>

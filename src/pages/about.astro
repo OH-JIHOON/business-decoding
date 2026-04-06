@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+---
+
+<BaseLayout title="About" description="business decoding 소개 — 비즈니스 구조를 해석하고 인사이트를 축적합니다">
+  <div class="container-narrow py-12">
+    <Breadcrumbs items={[
+      { name: 'Home', href: '/' },
+      { name: 'About' },
+    ]} />
+
+    <h1 class="text-3xl font-extrabold text-[var(--color-primary)] mb-8 tracking-tight">About</h1>
+
+    <div class="prose">
+      <p>
+        <strong>business decoding</strong>은 복잡한 비즈니스 구조를 명쾌하게 분석하고,
+        실행 가능한 인사이트로 축적하는 콘텐츠 플랫폼입니다.
+      </p>
+
+      <h2>무엇을 다루나요?</h2>
+      <ul>
+        <li><strong>System</strong> — 비즈니스 시스템과 구조 분석</li>
+        <li><strong>Automation</strong> — 업무 자동화와 효율화 전략</li>
+        <li><strong>Marketing</strong> — 마케팅 전략 수립과 실행</li>
+        <li><strong>Tools</strong> — 생산성 도구 리뷰와 활용법</li>
+        <li><strong>Case Study</strong> — 실제 비즈니스 사례 분석</li>
+      </ul>
+
+      <h2>왜 이 블로그를 만들었나요?</h2>
+      <p>
+        비즈니스 세계에는 수많은 정보가 넘쳐나지만, 정작 구조적으로 정리된 인사이트는 부족합니다.
+        이 블로그는 단순한 정보 나열이 아니라, 비즈니스의 본질적 구조를 해독하고
+        패턴을 발견하는 것을 목표로 합니다.
+      </p>
+
+      <h2>연락처</h2>
+      <p>
+        협업이나 문의는 <a href="/contact">Contact 페이지</a>를 통해 연락해주세요.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getAllPosts } from '../../utils/posts';
+
+const posts = await getAllPosts();
+---
+
+<BaseLayout title="Posts" description="business decoding의 모든 글 목록">
+  <div class="container py-12">
+    <Breadcrumbs items={[
+      { name: 'Home', href: '/' },
+      { name: 'Posts' },
+    ]} />
+
+    <h1 class="text-3xl font-extrabold text-[var(--color-primary)] mb-2 tracking-tight">Posts</h1>
+    <p class="text-[var(--color-text-secondary)] mb-10">총 {posts.length}개의 글</p>
+
+    <div class="grid gap-1 divide-y divide-[var(--color-border)]">
+      {posts.map((post) => (
+        <PostCard
+          id={post.id}
+          title={post.data.title}
+          date={post.data.date}
+          description={post.data.description}
+          tags={post.data.tags}
+          body={post.body || ''}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

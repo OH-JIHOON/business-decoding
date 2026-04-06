@@ -1,0 +1,40 @@
+---
+interface Post {
+  id: string;
+  data: {
+    title: string;
+  };
+}
+
+interface Props {
+  prev: Post | null;
+  next: Post | null;
+}
+
+const { prev, next } = Astro.props;
+---
+
+{(prev || next) && (
+  <nav class="mt-10 pt-8 border-t border-[var(--color-border)] grid grid-cols-1 sm:grid-cols-2 gap-4" aria-label="이전/다음 글" id="prev-next-nav">
+    {prev ? (
+      <a href={`/posts/${prev.id}`} class="group flex flex-col p-4 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-highlight)] transition-colors duration-200">
+        <span class="text-xs text-[var(--color-text-light)] mb-1">← 이전 글</span>
+        <span class="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-highlight)] transition-colors line-clamp-2">
+          {prev.data.title}
+        </span>
+      </a>
+    ) : (
+      <div></div>
+    )}
+    {next ? (
+      <a href={`/posts/${next.id}`} class="group flex flex-col p-4 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-highlight)] transition-colors duration-200 text-right">
+        <span class="text-xs text-[var(--color-text-light)] mb-1">다음 글 →</span>
+        <span class="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-highlight)] transition-colors line-clamp-2">
+          {next.data.title}
+        </span>
+      </a>
+    ) : (
+      <div></div>
+    )}
+  </nav>
+)}

@@ -1,0 +1,44 @@
+---
+import { getCanonicalURL } from '../utils/seo';
+
+interface BreadcrumbItem {
+  name: string;
+  href?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    ...(item.href ? { item: getCanonicalURL(item.href) } : {}),
+  })),
+};
+---
+
+<nav class="mb-6" aria-label="브레드크럼" id="breadcrumbs">
+  <ol class="flex items-center gap-1.5 text-xs text-[var(--color-text-light)]">
+    {items.map((item, index) => (
+      <li class="flex items-center gap-1.5">
+        {index > 0 && <span>/</span>}
+        {item.href ? (
+          <a href={item.href} class="hover:text-[var(--color-text)] transition-colors">
+            {item.name}
+          </a>
+        ) : (
+          <span class="text-[var(--color-text-secondary)]">{item.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

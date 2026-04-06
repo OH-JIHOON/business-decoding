@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getLatestPosts } from '../utils/posts';
+import { getAllTags } from '../utils/tags';
+
+const posts = await getLatestPosts(6);
+const allPostsForTags = await (await import('../utils/posts')).getAllPosts();
+const tagMap = getAllTags(allPostsForTags);
+const topTags = [...tagMap.entries()].slice(0, 12);
+
+const topics = [
+  { name: 'System', description: '비즈니스 시스템과 구조 분석', emoji: '⚙️' },
+  { name: 'Automation', description: '업무 자동화와 효율화', emoji: '🤖' },
+  { name: 'Marketing', description: '마케팅 전략과 실행', emoji: '📈' },
+  { name: 'Tools', description: '생산성 도구와 활용법', emoji: '🛠️' },
+  { name: 'Case Study', description: '실제 사례 분석과 인사이트', emoji: '📋' },
+];
+---
+
+<BaseLayout title="business decoding" description="비즈니스 구조를 해석하고 인사이트를 축적하는 콘텐츠 플랫폼">
+  <!-- Hero -->
+  <section class="py-20 md:py-28 bg-gradient-to-b from-[var(--color-surface)] to-[var(--color-surface-alt)]">
+    <div class="container-narrow text-center">
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--color-primary)] mb-4 leading-tight">
+        비즈니스를<br class="md:hidden" /> <span class="text-[var(--color-highlight)]">해독</span>하다
+      </h1>
+      <p class="text-lg text-[var(--color-text-secondary)] max-w-lg mx-auto leading-relaxed mb-8">
+        복잡한 비즈니스 구조를 명쾌하게 분석하고,<br />
+        실행 가능한 인사이트로 축적합니다.
+      </p>
+      <a
+        href="/posts"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-highlight)] transition-colors duration-200"
+        id="hero-cta"
+      >
+        글 읽으러 가기
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Topics -->
+  <section class="py-16">
+    <div class="container">
+      <h2 class="text-sm font-semibold text-[var(--color-text)] mb-6 uppercase tracking-wider">Topics</h2>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {topics.map((topic) => (
+          <div class="p-4 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-highlight)] transition-colors duration-200">
+            <span class="text-2xl mb-2 block">{topic.emoji}</span>
+            <h3 class="text-sm font-semibold text-[var(--color-text)] mb-1">{topic.name}</h3>
+            <p class="text-xs text-[var(--color-text-light)]">{topic.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest posts -->
+  <section class="py-16 bg-[var(--color-surface-alt)]">
+    <div class="container">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-sm font-semibold text-[var(--color-text)] uppercase tracking-wider">Latest Posts</h2>
+        <a href="/posts" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-highlight)] transition-colors">
+          전체 보기 →
+        </a>
+      </div>
+      <div class="grid gap-1 divide-y divide-[var(--color-border)]">
+        {posts.map((post) => (
+          <PostCard
+            id={post.id}
+            title={post.data.title}
+            date={post.data.date}
+            description={post.data.description}
+            tags={post.data.tags}
+            body={post.body || ''}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Tags -->
+  <section class="py-16">
+    <div class="container">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-sm font-semibold text-[var(--color-text)] uppercase tracking-wider">Tags</h2>
+        <a href="/tags" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-highlight)] transition-colors">
+          전체 보기 →
+        </a>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {topTags.map(([tag, count]) => (
+          <a
+            href={`/tags/${tag}`}
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-surface-alt)] rounded-full text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-highlight)] hover:text-white transition-all duration-200"
+          >
+            #{tag}
+            <span class="text-xs opacity-60">({count})</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

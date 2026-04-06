@@ -1,0 +1,35 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getAllPosts, getRelatedPosts, getPrevNextPosts } from '../../utils/posts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const allPosts = await getAllPosts();
+const relatedPosts = getRelatedPosts(allPosts, post.id, post.data.tags, 3);
+const { prev, next } = getPrevNextPosts(allPosts, post.id);
+---
+
+<PostLayout
+  title={post.data.title}
+  date={post.data.date}
+  description={post.data.description}
+  tags={post.data.tags}
+  body={post.body || ''}
+  headings={headings}
+  youtubeId={post.data.youtube_id}
+  relatedPosts={relatedPosts}
+  prevPost={prev}
+  nextPost={next}
+>
+  <Content />
+</PostLayout>

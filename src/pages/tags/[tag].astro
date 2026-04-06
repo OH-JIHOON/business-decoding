@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getAllPosts } from '../../utils/posts';
+import { getAllTags, getPostsByTag } from '../../utils/tags';
+
+export async function getStaticPaths() {
+  const allPosts = await (await import('../../utils/posts')).getAllPosts();
+  const tagMap = getAllTags(allPosts);
+  return [...tagMap.keys()].map((tag) => ({
+    params: { tag },
+    props: { tag, posts: getPostsByTag(allPosts, tag) },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title={`#${tag}`} description={`"${tag}" 태그가 포함된 글 목록`}>
+  <div class="container py-12">
+    <Breadcrumbs items={[
+      { name: 'Home', href: '/' },
+      { name: 'Tags', href: '/tags' },
+      { name: `#${tag}` },
+    ]} />
+
+    <h1 class="text-3xl font-extrabold text-[var(--color-primary)] mb-2 tracking-tight">#{tag}</h1>
+    <p class="text-[var(--color-text-secondary)] mb-10">{posts.length}개의 글</p>
+
+    <div class="grid gap-1 divide-y divide-[var(--color-border)]">
+      {posts.map((post: any) => (
+        <PostCard
+          id={post.id}
+          title={post.data.title}
+          date={post.data.date}
+          description={post.data.description}
+          tags={post.data.tags}
+          body={post.body || ''}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

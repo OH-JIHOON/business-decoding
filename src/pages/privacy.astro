@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+---
+
+<BaseLayout title="개인정보 처리방침" description="business decoding 개인정보 처리방침">
+  <div class="container-narrow py-12">
+    <Breadcrumbs items={[
+      { name: 'Home', href: '/' },
+      { name: 'Privacy' },
+    ]} />
+
+    <h1 class="text-3xl font-extrabold text-[var(--color-primary)] mb-8 tracking-tight">개인정보 처리방침</h1>
+
+    <div class="prose">
+      <p>최종 업데이트: 2026년 4월</p>
+
+      <h2>1. 수집하는 정보</h2>
+      <p>
+        본 사이트는 별도의 회원가입이나 개인정보 수집을 하지 않습니다.
+        다만, Google Analytics를 통해 익명 방문 통계를 수집할 수 있습니다.
+      </p>
+
+      <h2>2. 쿠키 사용</h2>
+      <p>
+        Google Analytics 사용 시, 방문 통계를 위한 쿠키가 설정될 수 있습니다.
+        브라우저 설정에서 쿠키를 비활성화할 수 있습니다.
+      </p>
+
+      <h2>3. 제3자 서비스</h2>
+      <ul>
+        <li><strong>Google Analytics</strong> — 방문 통계 분석</li>
+        <li><strong>YouTube</strong> — 영상 임베드 (일부 포스트)</li>
+        <li><strong>Cloudflare</strong> — 호스팅 및 CDN</li>
+      </ul>
+
+      <h2>4. 문의</h2>
+      <p>
+        개인정보 처리에 관한 문의는 <a href="/contact">Contact 페이지</a>를 이용해주세요.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

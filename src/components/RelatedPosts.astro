@@ -1,0 +1,39 @@
+---
+import { formatDate } from '../utils/posts';
+
+interface Post {
+  id: string;
+  data: {
+    title: string;
+    date: string;
+    tags: string[];
+  };
+}
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section class="mt-12 pt-8 border-t border-[var(--color-border)]" id="related-posts">
+    <h2 class="text-sm font-semibold text-[var(--color-text)] mb-4 uppercase tracking-wider">관련 글</h2>
+    <div class="grid gap-3">
+      {posts.map((post) => (
+        <a
+          href={`/posts/${post.id}`}
+          class="group flex items-center justify-between p-3 rounded-lg hover:bg-[var(--color-surface-alt)] transition-colors duration-200"
+        >
+          <span class="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-highlight)] transition-colors">
+            {post.data.title}
+          </span>
+          <time datetime={post.data.date} class="text-xs text-[var(--color-text-light)] shrink-0 ml-4">
+            {formatDate(post.data.date)}
+          </time>
+        </a>
+      ))}
+    </div>
+  </section>
+)}

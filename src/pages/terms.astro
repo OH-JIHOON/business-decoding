@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+---
+
+<BaseLayout title="이용약관" description="business decoding 이용약관">
+  <div class="container-narrow py-12">
+    <Breadcrumbs items={[
+      { name: 'Home', href: '/' },
+      { name: 'Terms' },
+    ]} />
+
+    <h1 class="text-3xl font-extrabold text-[var(--color-primary)] mb-8 tracking-tight">이용약관</h1>
+
+    <div class="prose">
+      <p>최종 업데이트: 2026년 4월</p>
+
+      <h2>1. 콘텐츠 저작권</h2>
+      <p>
+        본 사이트에 게시된 모든 콘텐츠의 저작권은 business decoding에 있습니다.
+        무단 복제, 배포를 금지하며, 인용 시 출처를 명시해주세요.
+      </p>
+
+      <h2>2. 면책 조항</h2>
+      <p>
+        본 사이트의 콘텐츠는 정보 제공 목적으로 작성되었습니다.
+        콘텐츠를 기반으로 한 의사결정에 대해 책임지지 않습니다.
+      </p>
+
+      <h2>3. 외부 링크</h2>
+      <p>
+        본 사이트에 포함된 외부 링크의 내용에 대해서는 책임지지 않습니다.
+      </p>
+
+      <h2>4. 약관 변경</h2>
+      <p>
+        본 약관은 사전 고지 없이 변경될 수 있으며,
+        변경된 약관은 사이트에 게시된 시점부터 효력이 발생합니다.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

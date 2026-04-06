@@ -1,0 +1,88 @@
+---
+import SocialLinks from './SocialLinks.astro';
+
+const navItems = [
+  { name: 'Home', href: '/' },
+  { name: 'Posts', href: '/posts' },
+  { name: 'Tags', href: '/tags' },
+  { name: 'About', href: '/about' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="border-b border-[var(--color-border)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+  <div class="container flex items-center justify-between h-16">
+    <a href="/" class="text-xl font-bold tracking-tight text-[var(--color-primary)] hover:text-[var(--color-highlight)] transition-colors" id="site-logo">
+      business decoding
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6" id="main-nav" aria-label="메인 내비게이션">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            'text-sm font-medium transition-colors duration-200',
+            currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+              ? 'text-[var(--color-highlight)]'
+              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]',
+          ]}
+        >
+          {item.name}
+        </a>
+      ))}
+    </nav>
+
+    <div class="hidden md:block">
+      <SocialLinks />
+    </div>
+
+    <!-- Mobile menu button -->
+    <button
+      id="mobile-menu-btn"
+      class="md:hidden p-2 text-[var(--color-text-secondary)]"
+      aria-label="메뉴 열기"
+      aria-expanded="false"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-[var(--color-border)] bg-white">
+    <nav class="container py-4 flex flex-col gap-3" aria-label="모바일 내비게이션">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            'text-sm font-medium py-1',
+            currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+              ? 'text-[var(--color-highlight)]'
+              : 'text-[var(--color-text-secondary)]',
+          ]}
+        >
+          {item.name}
+        </a>
+      ))}
+      <div class="pt-2 border-t border-[var(--color-border)]">
+        <SocialLinks />
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  if (btn && menu) {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      menu.classList.toggle('hidden');
+    });
+  }
+</script>

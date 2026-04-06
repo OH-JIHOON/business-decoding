@@ -1,0 +1,43 @@
+---
+import { formatDate } from '../utils/posts';
+import { getReadingTime } from '../utils/reading-time';
+
+interface Props {
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+  tags: string[];
+  body?: string;
+}
+
+const { id, title, date, description, tags, body } = Astro.props;
+const readingTime = body ? getReadingTime(body) : '';
+---
+
+<article class="group" id={`post-${id}`}>
+  <a href={`/posts/${id}`} class="block p-5 -mx-5 rounded-xl hover:bg-[var(--color-surface-alt)] transition-colors duration-200">
+    <div class="flex items-center gap-2 text-xs text-[var(--color-text-light)] mb-2">
+      <time datetime={date}>{formatDate(date)}</time>
+      {readingTime && (
+        <>
+          <span>·</span>
+          <span>{readingTime}</span>
+        </>
+      )}
+    </div>
+    <h2 class="text-lg font-semibold text-[var(--color-text)] group-hover:text-[var(--color-highlight)] transition-colors duration-200 mb-2 leading-snug">
+      {title}
+    </h2>
+    <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed line-clamp-2 mb-3">
+      {description}
+    </p>
+    <div class="flex flex-wrap gap-1.5">
+      {tags.map((tag) => (
+        <span class="inline-block text-xs px-2 py-0.5 bg-[var(--color-surface-alt)] text-[var(--color-text-secondary)] rounded-full">
+          #{tag}
+        </span>
+      ))}
+    </div>
+  </a>
+</article>

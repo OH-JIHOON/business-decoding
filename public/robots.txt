@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://business-decoding.pages.dev/sitemap-index.xml
