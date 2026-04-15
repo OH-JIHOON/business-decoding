@@ -27,8 +27,6 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="business decoding RSS" href="/rss.xml" />
     <SEO title={title} description={description} ogImage={ogImage} article={article} />
-    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-
     {gaId && (
       <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
     )}
@@ -75,6 +73,16 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
     <script is:inline>
     (function () {
       var pagefindInitialized = false;
+      var isModalOpen = false;
+      var lastFocusedElement = null;
+
+      function injectPagefindCSS() {
+        if (document.querySelector('link[href="/pagefind/pagefind-ui.css"]')) return;
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/pagefind/pagefind-ui.css';
+        document.head.appendChild(link);
+      }
 
       function initPagefind() {
         if (pagefindInitialized || typeof PagefindUI === 'undefined') return;
@@ -100,10 +108,15 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
           return;
         }
         if (document.querySelector('script[src="/pagefind/pagefind-ui.js"]')) {
+          var attempts = 0;
           var waiting = setInterval(function () {
+            attempts++;
             if (typeof PagefindUI !== 'undefined') {
               clearInterval(waiting);
               callback();
+            } else if (attempts >= 60) {
+              clearInterval(waiting);
+              console.warn('Pagefind UI failed to initialize within timeout.');
             }
           }, 50);
           return;
@@ -117,14 +130,47 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
         document.head.appendChild(script);
       }
 
-      function openSearch() {
+      function getFocusableElements(container) {
+        return Array.from(container.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        ));
+      }
+
+      function trapFocus(e) {
+        if (e.key !== 'Tab') return;
         var modal = document.getElementById('search-modal');
         if (!modal) return;
+        var focusable = getFocusableElements(modal);
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      }
+
+      function isEditableElement(el) {
+        if (!el) return false;
+        var tag = el.tagName;
+        return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+      }
+
+      function openSearch() {
+        var modal = document.getElementById('search-modal');
+        if (!modal || isModalOpen) return;
+        isModalOpen = true;
+        lastFocusedElement = document.activeElement;
+        injectPagefindCSS();
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', trapFocus);
         loadPagefind(function () {
+          if (!isModalOpen) return;
           initPagefind();
           setTimeout(function () {
+            if (!isModalOpen) return;
             var input = document.querySelector('.pagefind-ui__search-input');
             if (input) input.focus();
           }, 80);
@@ -133,9 +179,15 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
 
       function closeSearch() {
         var modal = document.getElementById('search-modal');
-        if (!modal) return;
+        if (!modal || !isModalOpen) return;
+        isModalOpen = false;
         modal.classList.add('hidden');
         document.body.style.overflow = '';
+        document.removeEventListener('keydown', trapFocus);
+        if (lastFocusedElement) {
+          lastFocusedElement.focus();
+          lastFocusedElement = null;
+        }
       }
 
       document.addEventListener('DOMContentLoaded', function () {
@@ -149,16 +201,13 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
           && document.getElementById('search-close').addEventListener('click', closeSearch);
 
         document.addEventListener('keydown', function (e) {
+          if (e.repeat) return;
           if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            if (isEditableElement(document.activeElement) && !isModalOpen) return;
             e.preventDefault();
-            var modal = document.getElementById('search-modal');
-            if (modal && modal.classList.contains('hidden')) {
-              openSearch();
-            } else {
-              closeSearch();
-            }
+            if (isModalOpen) { closeSearch(); } else { openSearch(); }
           }
-          if (e.key === 'Escape') {
+          if (e.key === 'Escape' && isModalOpen) {
             closeSearch();
           }
         });
