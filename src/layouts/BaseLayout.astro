@@ -27,7 +27,6 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="business decoding RSS" href="/rss.xml" />
     <SEO title={title} description={description} ogImage={ogImage} article={article} />
-    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
     <script src="/pagefind/pagefind-ui.js" defer></script>
     {gaId && (
       <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
@@ -131,6 +130,14 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', trapFocus);
+        // Lazily inject pagefind CSS only when search is first opened.
+        // This avoids a render-blocking <link> on every page load.
+        if (!document.querySelector('link[href="/pagefind/pagefind-ui.css"]')) {
+          var link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = '/pagefind/pagefind-ui.css';
+          document.head.appendChild(link);
+        }
         // pagefind-ui.js is loaded via <script defer> in <head>.
         // By the time a user can interact with the page it is ready,
         // but we poll briefly just in case.
