@@ -33,23 +33,53 @@ const currentPath = Astro.url.pathname;
       ))}
     </nav>
 
-    <div class="hidden md:block">
+    <div class="hidden md:flex items-center gap-3">
+      <!-- Search button (desktop) -->
+      <button
+        id="search-trigger"
+        class="flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors px-2 py-1 rounded-md hover:bg-[var(--color-surface-alt)]"
+        aria-label="검색 열기"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <span>검색</span>
+        <kbd class="hidden lg:inline-flex items-center gap-0.5 text-xs bg-[var(--color-surface-alt)] border border-[var(--color-border)] rounded px-1.5 py-0.5 font-mono">
+          <span>⌘</span><span>K</span>
+        </kbd>
+      </button>
       <SocialLinks />
     </div>
 
-    <!-- Mobile menu button -->
-    <button
-      id="mobile-menu-btn"
-      class="md:hidden p-2 text-[var(--color-text-secondary)]"
-      aria-label="메뉴 열기"
-      aria-expanded="false"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <line x1="3" y1="12" x2="21" y2="12" />
-        <line x1="3" y1="18" x2="21" y2="18" />
-      </svg>
-    </button>
+    <!-- Mobile buttons -->
+    <div class="md:hidden flex items-center gap-1">
+      <!-- Search button (mobile) -->
+      <button
+        id="search-trigger-mobile"
+        class="p-2 text-[var(--color-text-secondary)]"
+        aria-label="검색"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </button>
+
+      <!-- Mobile menu button -->
+      <button
+        id="mobile-menu-btn"
+        class="p-2 text-[var(--color-text-secondary)]"
+        aria-label="메뉴 열기"
+        aria-expanded="false"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- Mobile menu -->
