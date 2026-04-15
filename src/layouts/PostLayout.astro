@@ -38,7 +38,7 @@ const jsonLd = generateJSONLD({
 ---
 
 <BaseLayout title={title} description={description} article={{ publishedTime: date, tags }}>
-  <article class="container-narrow py-12">
+  <article class="container-narrow py-12" data-pagefind-body>
     <Breadcrumbs items={[
       { name: 'Home', href: '/' },
       { name: 'Posts', href: '/posts' },
@@ -48,7 +48,7 @@ const jsonLd = generateJSONLD({
     <!-- Post header -->
     <header class="mb-8">
       <div class="flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-light)] mb-3">
-        <time datetime={date}>{formatDate(date)}</time>
+        <time datetime={date} data-pagefind-meta="date">{formatDate(date)}</time>
         <span>·</span>
         <span>{readingTime} 읽기</span>
       </div>
@@ -63,6 +63,7 @@ const jsonLd = generateJSONLD({
           <a
             href={`/tags/${tag}`}
             class="inline-block text-xs px-3 py-1 bg-[var(--color-surface-alt)] text-[var(--color-text-secondary)] rounded-full hover:bg-[var(--color-highlight)] hover:text-white transition-all duration-200"
+            data-pagefind-filter={`태그:${tag}`}
           >
             #{tag}
           </a>
@@ -72,7 +73,9 @@ const jsonLd = generateJSONLD({
 
     {youtubeId && <YouTubeEmbed youtubeId={youtubeId} title={title} />}
 
-    <TOC headings={headings} />
+    <div data-pagefind-ignore>
+      <TOC headings={headings} />
+    </div>
 
     <!-- Post content -->
     <div class="prose">
@@ -80,12 +83,14 @@ const jsonLd = generateJSONLD({
     </div>
 
     <!-- Share -->
-    <div class="mt-10 pt-6 border-t border-[var(--color-border)]">
+    <div class="mt-10 pt-6 border-t border-[var(--color-border)]" data-pagefind-ignore>
       <ShareButtons title={title} url={postUrl} />
     </div>
 
-    <RelatedPosts posts={relatedPosts} />
-    <PrevNextNav prev={prevPost} next={nextPost} />
+    <div data-pagefind-ignore>
+      <RelatedPosts posts={relatedPosts} />
+      <PrevNextNav prev={prevPost} next={nextPost} />
+    </div>
   </article>
 
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
