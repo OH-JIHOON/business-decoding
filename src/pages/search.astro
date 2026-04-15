@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="검색 | business decoding" description="비즈니스 디코딩 글 검색">
+  <section class="py-12">
+    <div class="container-narrow">
+      <h1 class="text-2xl font-bold text-[var(--color-primary)] mb-8">검색</h1>
+
+      <div class="relative mb-8">
+        <input
+          id="search-input"
+          type="search"
+          placeholder="제목, 설명, 태그로 검색..."
+          autocomplete="off"
+          class="w-full px-4 py-3 pr-12 border border-[var(--color-border)] rounded-xl text-[var(--color-text)] bg-white focus:outline-none focus:border-[var(--color-highlight)] transition-colors text-sm"
+          aria-label="검색어 입력"
+        />
+        <svg class="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-text-light)] pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+      </div>
+
+      <p id="search-status" class="text-sm text-[var(--color-text-light)] mb-6" aria-live="polite"></p>
+
+      <ul id="search-results" class="divide-y divide-[var(--color-border)]" role="list"></ul>
+
+      <p id="no-results" class="hidden text-center py-16 text-[var(--color-text-light)]">검색 결과가 없습니다.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  type Post = {
+    id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    date: string;
+  };
+
+  const input = document.getElementById('search-input') as HTMLInputElement;
+  const resultsList = document.getElementById('search-results') as HTMLUListElement;
+  const noResults = document.getElementById('no-results') as HTMLParagraphElement;
+  const statusEl = document.getElementById('search-status') as HTMLParagraphElement;
+
+  let allPosts: Post[] = [];
+  let debounceTimer: ReturnType<typeof setTimeout>;
+
+  function formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  function highlight(text: string, query: string): string {
+    if (!query) return text;
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark class="bg-yellow-100 text-[var(--color-text)]">$1</mark>');
+  }
+
+  function search(query: string) {
+    const q = query.trim().toLowerCase();
+
+    if (!q) {
+      resultsList.innerHTML = '';
+      noResults.classList.add('hidden');
+      statusEl.textContent = '';
+      return;
+    }
+
+    const words = q.split(/\s+/);
+    const results = allPosts.filter((post) => {
+      const haystack = [post.title, post.description, ...post.tags].join(' ').toLowerCase();
+      return words.every((word) => haystack.includes(word));
+    });
+
+    resultsList.innerHTML = '';
+
+    if (results.length === 0) {
+      noResults.classList.remove('hidden');
+      statusEl.textContent = '';
+    } else {
+      noResults.classList.add('hidden');
+      statusEl.textContent = `${results.length}개의 결과`;
+
+      results.forEach((post) => {
+        const li = document.createElement('li');
+        li.className = 'py-5';
+        li.innerHTML = `
+          <a href="/posts/${post.id}" class="group block">
+            <p class="text-xs text-[var(--color-text-light)] mb-1">${formatDate(post.date)}</p>
+            <h2 class="text-base font-semibold text-[var(--color-text)] group-hover:text-[var(--color-highlight)] transition-colors mb-1 leading-snug">
+              ${highlight(post.title, query.trim())}
+            </h2>
+            <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-2">
+              ${highlight(post.description, query.trim())}
+            </p>
+            <div class="flex flex-wrap gap-1.5">
+              ${post.tags.map((tag) => `<span class="text-xs px-2 py-0.5 bg-[var(--color-surface-alt)] rounded-full text-[var(--color-text-secondary)]">#${tag}</span>`).join('')}
+            </div>
+          </a>
+        `;
+        resultsList.appendChild(li);
+      });
+    }
+  }
+
+  async function init() {
+    try {
+      const res = await fetch('/search-index.json');
+      allPosts = await res.json();
+
+      // URL 쿼리 파라미터로 초기 검색어 반영
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q') || '';
+      if (q) {
+        input.value = q;
+        search(q);
+      }
+
+      input.focus();
+    } catch {
+      statusEl.textContent = '검색 인덱스를 불러올 수 없습니다.';
+    }
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => search(input.value), 200);
+  });
+
+  init();
+</script>
