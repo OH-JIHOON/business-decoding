@@ -27,6 +27,8 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="business decoding RSS" href="/rss.xml" />
     <SEO title={title} description={description} ogImage={ogImage} article={article} />
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <script src="/pagefind/pagefind-ui.js" defer></script>
     {gaId && (
       <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
     )}
@@ -55,8 +57,8 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
     <div id="search-modal" class="fixed inset-0 z-[200] hidden" role="dialog" aria-modal="true" aria-label="검색">
       <div id="search-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
       <div class="relative z-10 flex items-start justify-center pt-16 md:pt-24 px-4">
-        <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden">
-          <div class="flex items-center justify-between px-4 pt-4 pb-2 border-b border-[var(--color-border)]">
+        <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+          <div class="flex-shrink-0 flex items-center justify-between px-4 pt-4 pb-2 border-b border-[var(--color-border)]">
             <span class="text-sm font-medium text-[var(--color-text-secondary)]">검색</span>
             <button id="search-close" class="p-1 text-[var(--color-text-light)] hover:text-[var(--color-text)] transition-colors" aria-label="검색 닫기">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -65,7 +67,7 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
               </svg>
             </button>
           </div>
-          <div id="pagefind-search" class="p-4"></div>
+          <div id="pagefind-search" class="p-4 overflow-y-auto"></div>
         </div>
       </div>
     </div>
@@ -75,14 +77,6 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
       var pagefindInitialized = false;
       var isModalOpen = false;
       var lastFocusedElement = null;
-
-      function injectPagefindCSS() {
-        if (document.querySelector('link[href="/pagefind/pagefind-ui.css"]')) return;
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/pagefind/pagefind-ui.css';
-        document.head.appendChild(link);
-      }
 
       function initPagefind() {
         if (pagefindInitialized || typeof PagefindUI === 'undefined') return;
@@ -100,34 +94,6 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
             searching: '검색 중...',
           },
         });
-      }
-
-      function loadPagefind(callback) {
-        if (typeof PagefindUI !== 'undefined') {
-          callback();
-          return;
-        }
-        if (document.querySelector('script[src="/pagefind/pagefind-ui.js"]')) {
-          var attempts = 0;
-          var waiting = setInterval(function () {
-            attempts++;
-            if (typeof PagefindUI !== 'undefined') {
-              clearInterval(waiting);
-              callback();
-            } else if (attempts >= 60) {
-              clearInterval(waiting);
-              console.warn('Pagefind UI failed to initialize within timeout.');
-            }
-          }, 50);
-          return;
-        }
-        var script = document.createElement('script');
-        script.src = '/pagefind/pagefind-ui.js';
-        script.onload = callback;
-        script.onerror = function () {
-          console.warn('Pagefind not available. Run `npm run build` to enable search.');
-        };
-        document.head.appendChild(script);
       }
 
       function getFocusableElements(container) {
@@ -162,19 +128,25 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
         if (!modal || isModalOpen) return;
         isModalOpen = true;
         lastFocusedElement = document.activeElement;
-        injectPagefindCSS();
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', trapFocus);
-        loadPagefind(function () {
-          if (!isModalOpen) return;
-          initPagefind();
-          setTimeout(function () {
-            if (!isModalOpen) return;
-            var input = document.querySelector('.pagefind-ui__search-input');
-            if (input) input.focus();
-          }, 80);
-        });
+        // pagefind-ui.js is loaded via <script defer> in <head>.
+        // By the time a user can interact with the page it is ready,
+        // but we poll briefly just in case.
+        var attempts = 0;
+        (function waitForUI() {
+          if (typeof PagefindUI !== 'undefined') {
+            initPagefind();
+            setTimeout(function () {
+              if (!isModalOpen) return;
+              var input = document.querySelector('.pagefind-ui__search-input');
+              if (input) input.focus();
+            }, 50);
+          } else if (attempts++ < 40) {
+            setTimeout(waitForUI, 50);
+          }
+        })();
       }
 
       function closeSearch() {

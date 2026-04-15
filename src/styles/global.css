@@ -173,7 +173,8 @@ body {
 }
 
 /* ===== Pagefind UI ===== */
-:root {
+/* Scope overrides to #search-modal so they win over pagefind-ui.css :root defaults */
+#search-modal {
   --pagefind-ui-scale: 1;
   --pagefind-ui-primary: var(--color-accent);
   --pagefind-ui-text: var(--color-text);
