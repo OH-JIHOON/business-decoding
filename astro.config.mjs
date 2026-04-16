@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://business-decoding.pages.dev',
+  site: 'https://business-decoding.abve.workers.dev',
   output: 'static',
   integrations: [sitemap()],
   vite: {

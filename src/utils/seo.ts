@@ -11,7 +11,7 @@ export interface SEOProps {
 }
 
 const SITE_NAME = 'business decoding';
-const SITE_URL = 'https://business-decoding.pages.dev';
+const SITE_URL = 'https://business-decoding.abve.workers.dev';
 
 export function getPageTitle(title: string): string {
   if (title === SITE_NAME) return title;
